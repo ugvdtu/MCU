@@ -6,7 +6,7 @@
 void Clockwise()
 void AntiClockwise()
 void Speed(int pwm)
-
+void brake()
 void setup()
 {
   pinMode(M1_DIR1,OUTPUT);
@@ -34,5 +34,7 @@ void AntiClockwise()
 
 void Speed(int pwm)
 {
-  analog
+  analogWrite(pwm,OUTPUT)
+    digitalWrite(M1_PWM2 ,LOW)
+    
 }
