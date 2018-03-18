@@ -1,4 +1,4 @@
-1define M1_PWM1 9 
+#define M1_PWM1 9 
 #define M1_PWM2 10
 #define M1_DIR1 11
 #define M1_DIR2 12
@@ -40,3 +40,5 @@ void Speed(int pwm)
 analogWrite(M1_PWM2,255)  // moving with full speed 
     
 }
+void loop()
+{}
