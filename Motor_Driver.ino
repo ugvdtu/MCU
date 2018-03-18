@@ -34,7 +34,9 @@ void AntiClockwise()
 
 void Speed(int pwm)
 {
-  analogWrite(pwm,OUTPUT)
-    digitalWrite(M1_PWM2 ,LOW)
+  
+  analogWrite(M1_PWM1,128) //moving with half speed 
+  delay(10000)
+analogWrite(M1_PWM2,255)  // moving with full speed 
     
 }
