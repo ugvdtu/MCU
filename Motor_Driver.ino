@@ -1,4 +1,4 @@
-#define M1_PWM1 9 
+1define M1_PWM1 9 
 #define M1_PWM2 10
 #define M1_DIR1 11
 #define M1_DIR2 12
@@ -10,9 +10,9 @@ void brake()
 void setup()
 {
   pinMode(M1_DIR1,OUTPUT);
-  pinMode(M2_DIR2,OUTPUT);
+  pinMode(M1_DIR2,OUTPUT);
   pinMode(M1_PWM1,OUTPUT);
-  pinMode(M2_PWM2,OUTPUT);
+  pinMode(M1_PWM2,OUTPUT);
 }
 
 void loop()
