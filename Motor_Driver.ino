@@ -34,11 +34,16 @@ void AntiClockwise()
 
 void Speed(int pwm)
 {
-  
-  analogWrite(M1_PWM1,128) //moving with half speed 
-  delay(10000)
-analogWrite(M1_PWM2,255)  // moving with full speed 
+  for (int pwm = 5 ; pwm < 245; pwm += 10) // speed will get increased untill it reach 245
+  {
+    analogWrite( M1_PWM1, pwm);
+    delay(100);
+    if (pwm == 245) // at 245 speed becomes maximum
+    {
+      pwm = 255; // runs infinetly
+      
+    }
+  }
     
 }
-void loop()
-{}
+
