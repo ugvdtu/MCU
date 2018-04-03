@@ -57,10 +57,15 @@ void setup()
 
 void loop()
 {
-  digitalWrite(12,HIGH);
+  //digitalWrite(12,HIGH);
+  //digitalWrite(13,HIGH);
+  Clockwise(M1_DIR);
+  Clockwise(M2_DIR);
   delay(1000);
-  digitalWrite(12,LOW);
-  brake();
+  //digitalWrite(12,LOW);
+  //digitalWrite(13,LOW);
+  AntiClockwise(M1_DIR);
+  AntiClockwise(M2_DIR);
   delay(1000);
   
 }
