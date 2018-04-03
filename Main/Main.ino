@@ -3,7 +3,7 @@
 #include <ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
-
+#include <std_msgs/UInt8MultiArray.h>
 #define M1_PWM 9 
 #define M2_PWM 10
 #define M1_DIR 12
@@ -50,15 +50,16 @@ void setPwmFrequency(int pin, int divisor) {
 
 ros::NodeHandle  nh;
 
-char hello[13] = "hello world!";
+//char hello[13] = "hello world!";
 
-void messageCb( const std_msgs::Empty& toggle_msg){
+void messageCb( const std_msgs::UInt8MultiArray& toggle_msg){
   digitalWrite(13, HIGH-digitalRead(13));   // blink the led
 }
 
-std_msgs::String str_msg;
-ros::Publisher chatter("MCU_Output", &str_msg);
-ros::Subscriber<std_msgs::Empty> sub("MCU_Input", &messageCb );
+//std_msgs::String str_msg;
+std_msgs:: UInt8MultiArray msg;
+ros::Publisher chatter("MCU_Output", &msg);
+ros::Subscriber<std_msgs::UInt8MultiArray> sub("MCU_Input", &messageCb );
 
 void setup()
 {
@@ -79,8 +80,8 @@ void setup()
 
 void loop()
 {
-  str_msg.data = hello;
-  chatter.publish( &str_msg );
+  //str_msg.data = hello;
+  //chatter.publish( &msg );
   nh.spinOnce();
   delay(1);
 }
