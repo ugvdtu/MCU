@@ -57,8 +57,8 @@ void messageCb( const std_msgs::Empty& toggle_msg){
 }
 
 std_msgs::String str_msg;
-ros::Publisher chatter("chatter", &str_msg);
-ros::Subscriber<std_msgs::Empty> sub("toggle_led", &messageCb );
+ros::Publisher chatter("MCU_Output", &str_msg);
+ros::Subscriber<std_msgs::Empty> sub("MCU_Input", &messageCb );
 
 void setup()
 {
