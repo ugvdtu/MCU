@@ -52,8 +52,23 @@ ros::NodeHandle  nh;
 
 //char hello[13] = "hello world!";
 
-void messageCb( const std_msgs::UInt8MultiArray& toggle_msg){
+void messageCb( const std_msgs::UInt8MultiArray& msg){
   digitalWrite(13, HIGH-digitalRead(13));   // blink the led
+  
+  // msg[0]: Direction of motor #1
+  // msg[1]: Speed of motor #1
+  // msg[2]: Direction of motor #2
+  // msg[3]: Speed of motor #2
+  
+  if(msg[0] == 1) 
+    Clockwise(M1_DIR);
+  else AntiClockwise(M1_DIR);
+  
+  if(msg[2] == 1)
+    Clockwise(M2_DIR);
+  else AntiClockwise(M2_DIR);
+  
+  Left_Right(msg[1], msg[3]);
 }
 
 //std_msgs::String str_msg;
