@@ -1,54 +1,52 @@
 import rospy
 from std_msgs.msg import Int16, UInt8MultiArray
-from threading import Thread
+from time import sleep
 
 FORWARD = 1
 BACKWARD = 0
 SLOW = 100
 FAST = 200
 
-def update_angle(new_angle):
-	angle = int(new_angle.data)
+PUBLISHER_TOPIC = 'MCU_Input'
+SUBSCRIBER_TOPIC = 'IMU_Output'
 
-def start_fetching():
-	rospy.init_node('Navigate', anonymous=True)
-	rospy.Subscriber('IMU_Output', Int16, update_angle)
+class Navigator:
+	
+	def __init__(self):
+		rospy.init_node('Navigator', anonymous=True)
+		self.publisher = rospy.Publisher(PUBLISHER_TOPIC, UInt8MultiArray, queue_size=5)
+		self.subscriber = rospy.Subscriber(SUBSCRIBER_TOPIC, Int16, self.update_angle)
+		self.angle = 0
+		self.r = rospy.Rate(10)
+		sleep(3)          # Time to properly initialize stuff
 
-	global pub
-	pub = rospy.Publisher('MCU_input', std_msgs.msg.UInt8MultiArray)
+	def update_angle(self, new_angle):
+		self.angle = int(new_angle.data)
 
-def motor_cmd(left_dir, left_speed, right_dir, right_speed):
-	pub.publish(UInt8MultiArray(4, [left_dir, left_speed, right_dir, right_speed]))
+	def motor_cmd(self, left_dir, left_speed, right_dir, right_speed):
+		cmd = UInt8MultiArray(data=[left_dir, left_speed, right_dir, right_speed])
+		self.publisher.publish(cmd)
+		print 'Published %r' % cmd.data
+		self.r.sleep()
 
-def turn_left(target_angle):
-	while angle < target_angle:
-		motor_cmd(FORWARD, 0, FORWARD, SLOW)
+	def turn_left(self, target_angle):
+		while self.angle < target_angle:
+			self.motor_cmd(FORWARD, 0, FORWARD, SLOW)
 
-def turn_right(target_angle):
-	while angle > target_angle:
-		motor_cmd(FORWARD, SLOW, FORWARD, 0)
+	def turn_right(self, target_angle):
+		while self.angle > target_angle:
+			self.motor_cmd(FORWARD, SLOW, FORWARD, 0)
 
-def move_forward(speed):
-	motor_cmd(FORWARD, speed, FORWARD, speed)
+	def move_forward(self, speed):
+		self.motor_cmd(FORWARD, speed, FORWARD, speed)
 
-def move_backward(speed):
-	motor_cmd(BACKWARD, speed, BACKWARD, speed)
+	def move_backward(self, speed):
+		self.motor_cmd(BACKWARD, speed, BACKWARD, speed)
 
-def turn(target_angle):
-	"""Negative angle = right turn
-	   and positive angle = left turn"""
-
-	if angle < target_angle:
-		turn_left(target_angle)
-	else:
-		turn_right(target_angle)
-
-def init():
-	global angle
-	angle = 0
-
-	t = Thread(target=start_fetching)
-	t.start()
-
-if __name__ == '__main__':
-	init()
+	def turn(self, target_angle):
+		"""Negative angle = right turn
+		   and positive angle = left turn"""
+		if self.angle < target_angle:
+			self.turn_left(target_angle)
+		else:
+			self.turn_right(target_angle)
