@@ -10,9 +10,12 @@
  */
 #include <ros.h>
 #include <std_msgs/Int16.h>
+#include <std_msgs/UInt8MultiArray.h>
+
 ros::NodeHandle  nh;
 
-std_msgs::Int16 int_msg;
+//std_msgs::Int16 int_msg;
+std_msgs::UInt8MultiArray int_msg;
 ros::Publisher chatter("chatter", &int_msg);
 
 
@@ -41,14 +44,17 @@ void setup()
   digitalWrite(intPin, LOW);
   pinMode(myLed, OUTPUT);
   digitalWrite(myLed, HIGH);
-
+  int_msg.data = (uint8_t *)malloc(sizeof(uint8_t)*4);
+  
+  
+  int_msg.data_length=4;
 
   // Read the WHO_AM_I register, this is a good test of communication
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
   //Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX);
   //Serial.print(" I should be "); Serial.println(0x71, HEX);
 
-
+  
 
   if (c == 0x73) // WHO_AM_I should always be 0x68
   {
@@ -218,7 +224,7 @@ void loop()
       // Declination of SparkFun Electronics (40°05'26.6"N 105°11'05.9"W) is
       //   8° 30' E  ± 0° 21' (or 8.5°) on 2016-07-19
       // - http://www.ngdc.noaa.gov/geomag-web/#declination
-      myIMU.yaw   -= 8.5;
+      myIMU.yaw   -= 1.25;
       myIMU.roll  *= RAD_TO_DEG;
 
       //if(SerialDebug)
@@ -240,8 +246,12 @@ void loop()
       myIMU.sum = 0;
     } 
   }
-  int_msg.data = dummy;
-  
+   
+   
+  int_msg.data[0]=1;
+  int_msg.data[1]=1;
+  int_msg.data[2]=dummy;
+  int_msg.data[3]=0;
   chatter.publish( &int_msg );
   nh.spinOnce();
   delay(100);
