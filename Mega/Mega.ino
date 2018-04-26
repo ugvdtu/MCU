@@ -9,8 +9,8 @@
 
 #define M1_PWM 9 
 #define M2_PWM 10
-#define M1_DIR 12
-#define M2_DIR 13
+#define M1_DIR 11
+#define M2_DIR 12
 #define AHRS true         // Set to false for basic data read
 #define SerialDebug true  // Set to true to get Serial output for debugging
 
@@ -39,9 +39,10 @@ void messageCb( const std_msgs::UInt8MultiArray& msg){
   test=msg.data[0];
   if(msg.data[0] == 1) 
     {Clockwise(M1_DIR);
+     
      //digitalWrite(LED_BUILTIN,HIGH);
     }
-  else 
+  else if ( msg.data[0] == 0)
     {AntiClockwise(M1_DIR);
      //digitalWrite(LED_BUILTIN,LOW);
     }
@@ -49,13 +50,13 @@ void messageCb( const std_msgs::UInt8MultiArray& msg){
     {
       Clockwise(M2_DIR);
     }
-  else 
+  else if (msg.data[2] == 0)
      {
       AntiClockwise(M2_DIR);
      }
   
-  Speed(msg.data[1],M1_DIR);
-  Speed(msg.data[3],M2_DIR);
+  analogWrite(M1_PWM,msg.data[1]);
+  analogWrite(M2_PWM,msg.data[3]);
 }
 
 //UnInt8Multi Array
@@ -70,10 +71,10 @@ void setup()
   
   //IMU Routine
   Wire.begin();
-  pinMode(intPin, INPUT);
-  digitalWrite(intPin, LOW);
-  pinMode(myLed, OUTPUT);
-  digitalWrite(myLed, HIGH);
+  //pinMode(intPin, INPUT);
+  //digitalWrite(intPin, LOW);
+  //pinMode(myLed, OUTPUT);
+  //digitalWrite(myLed, HIGH);
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
   myIMU.calibrateMPU9250(myIMU.gyroBias, myIMU.accelBias);
   myIMU.initMPU9250();
@@ -87,8 +88,9 @@ void setup()
   pinMode(13,OUTPUT);
   //setPwmFrequency(M1_PWM, 8); //9,8 ...3.9Khz
   //setPwmFrequency(M2_PWM, 8);
-  analogWrite(M1_PWM,50);
-  analogWrite(M2_PWM,50);
+  TCCR2B = (TCCR2B & 0xF8) | 0x02; //3.9Khz 9&10
+  //analogWrite(M1_PWM,50);
+  //analogWrite(M2_PWM,50);
   
   //Publisher Setup
   msg.data = (int8_t *)malloc(sizeof(int8_t)*4);
@@ -102,6 +104,8 @@ void setup()
 
 void loop()
 {
+  
+  //IMU 
   if (myIMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
   {  
     myIMU.readAccelData(myIMU.accelCount);  // Read the x/y/z adc values
@@ -132,30 +136,15 @@ void loop()
     // User environmental x-axis correction in milliGauss
     myIMU.magbias[2] = +125.;
 
-    // Calculate the magnetometer values in milliGauss
-    // Include factory calibration per data sheet and user environmental
-    // corrections
-    // Get actual magnetometer value, this depends on scale being set
     myIMU.mx = (float)myIMU.magCount[0]*myIMU.mRes*myIMU.magCalibration[0] -
                myIMU.magbias[0];
     myIMU.my = (float)myIMU.magCount[1]*myIMU.mRes*myIMU.magCalibration[1] -
                myIMU.magbias[1];
     myIMU.mz = (float)myIMU.magCount[2]*myIMU.mRes*myIMU.magCalibration[2] -
                myIMU.magbias[2];
-  } // if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
-
-  // Must be called before updating quaternions!
+  } 
   myIMU.updateTime();
 
-  // Sensors x (y)-axis of the accelerometer is aligned with the y (x)-axis of
-  // the magnetometer; the magnetometer z-axis (+ down) is opposite to z-axis
-  // (+ up) of accelerometer and gyro! We have to make some allowance for this
-  // orientationmismatch in feeding the output to the quaternion filter. For the
-  // MPU-9250, we have chosen a magnetic rotation that keeps the sensor forward
-  // along the x-axis just like in the LSM9DS0 sensor. This rotation can be
-  // modified to allow any convenient orientation convention. This is ok by
-  // aircraft orientation standards! Pass gyro rate as rad/s
-//  MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
   MahonyQuaternionUpdate(myIMU.ax, myIMU.ay, myIMU.az, myIMU.gx*DEG_TO_RAD,
                          myIMU.gy*DEG_TO_RAD, myIMU.gz*DEG_TO_RAD, myIMU.my,
                          myIMU.mx, myIMU.mz, myIMU.deltat);
