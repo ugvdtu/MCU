@@ -18,7 +18,7 @@ class Navigator:
 		self.subscriber = rospy.Subscriber(SUBSCRIBER_TOPIC, Int8MultiArray, self.update_angle)
 		self.angle = 0
 		self.r = rospy.Rate(10)
-		sleep(3)          # Time to properly initialize stuff
+		sleep(10)          # Time to properly initialize stuff
 
 	def update_angle(self, new_angle):
 		self.angle = int(new_angle.data[3])
