@@ -40,3 +40,6 @@ def turn_while_moving_slow():
 
 while True:
 	nav.motor_cmd(1, navigate.SLOW, 0, navigate.SLOW)
+	sleep(5)
+	nav.motor_cmd(0, navigate.SLOW, 1, navigate.SLOW)
+	sleep(5)
