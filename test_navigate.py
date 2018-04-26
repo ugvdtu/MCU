@@ -18,9 +18,7 @@ def turn_while_moving_forward(speed, angle):
 	nav.turn(angle)
 
 
-
 # The tests
-
 def forward_backward_slow():
 	forward_backward(navigate.SLOW, navigate.SLOW)
 
@@ -40,7 +38,5 @@ def turn_while_moving_slow():
 	turn_while_moving_forward(navigate.SLOW, 0)
 
 
-forward_backward_slow()
-forward_backward_fast()
-forward_backward_slow_fast()
-forward_backward_fast_slow()
+while True:
+	nav.motor_cmd(1, navigate.SLOW, 0, navigate.SLOW)
