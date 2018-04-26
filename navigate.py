@@ -4,7 +4,7 @@ from time import sleep
 
 FORWARD = 1
 BACKWARD = 0
-SLOW = 100
+SLOW = 50
 FAST = 200
 
 PUBLISHER_TOPIC = 'MCU_Input'
