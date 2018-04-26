@@ -1,5 +1,5 @@
 import rospy
-from std_msgs.msg import Int16, UInt8MultiArray
+from std_msgs.msg import Int8MultiArray, UInt8MultiArray
 from time import sleep
 
 FORWARD = 1
@@ -15,13 +15,13 @@ class Navigator:
 	def __init__(self):
 		rospy.init_node('Navigator', anonymous=True)
 		self.publisher = rospy.Publisher(PUBLISHER_TOPIC, UInt8MultiArray, queue_size=5)
-		self.subscriber = rospy.Subscriber(SUBSCRIBER_TOPIC, Int16, self.update_angle)
+		self.subscriber = rospy.Subscriber(SUBSCRIBER_TOPIC, Int8MultiArray, self.update_angle)
 		self.angle = 0
 		self.r = rospy.Rate(10)
 		sleep(3)          # Time to properly initialize stuff
 
 	def update_angle(self, new_angle):
-		self.angle = int(new_angle.data)
+		self.angle = int(new_angle.data[3])
 
 	def motor_cmd(self, left_dir, left_speed, right_dir, right_speed):
 		cmd = UInt8MultiArray(data=[left_dir, left_speed, right_dir, right_speed])
