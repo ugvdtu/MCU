@@ -1,5 +1,4 @@
-//UGV
-
+#include <TimerThree.h>
 #include <ros.h>
 #include <std_msgs/String.h>
 #include "quaternionFilters.h"
@@ -24,7 +23,7 @@ void Clockwise(int pin);
 void AntiClockwise(int pin);
 void Speed(int pwm,int pin);
 void Forward(int pwm);
-
+void rosSpin();
 ros::NodeHandle  nh;
 
 int test=-1; 
@@ -66,6 +65,8 @@ ros::Subscriber<std_msgs::UInt8MultiArray> sub("MCU_Input", &messageCb );
 
 void setup()
 {
+  Timer3.initialize(500000);
+  Timer3.attachInterrupt(rosSpin);
   //SET PWM Frequency For Motor Driver
   
   
@@ -219,7 +220,9 @@ void Forward(int pwm)
   Speed(pwm,M2_DIR);
 }
 
-
-
-
+void rosSpin()
+{
+ nh.spinOnce();
+ digitalWrite(13, digitalRead(13) ^ 1);
+}
 
