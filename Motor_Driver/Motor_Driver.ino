@@ -15,6 +15,7 @@ void Forward(int pwm);
 void Left_Right(int pwml,int pwmr);
 void brake();
 
+boolean flag=True;
 
 void messageCb( const std_msgs::UInt8MultiArray& msg){
   //digitalWrite(13, HIGH-digitalRead(13));   // blink the led
@@ -99,14 +100,17 @@ void setup()
 
 void loop()
 {
-  /*Clockwise(M1_DIR);
-  Clockwise(M2_DIR);
-  delay(1000);
-  AntiClockwise(M1_DIR);
-  AntiClockwise(M2_DIR);
-  delay(1000);*/
-  nh1.spinOnce();
-  delay(1);
+  //Insert code to check if switch pressed Both physical and RF
+  if(//switch pressed)
+  //{flag=!flag;
+     //digitalWrite(13, HIGH-digitalRead(13)); //Indicator LED
+  //}
+  if(flag)
+  {
+    nh1.spinOnce();
+    delay(1);
+  }
+  
   
 }
 
