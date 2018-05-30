@@ -1,7 +1,8 @@
 from time import sleep
 import navigate
- 
-INTERVAL = 2 #seconds
+import math
+
+INTERVAL = 2#seconds
 
 # Helper functions
 
@@ -38,8 +39,8 @@ def turn_while_moving_slow():
 	turn_while_moving_forward(navigate.SLOW, 0)
 
 
-while True:
-	nav.motor_cmd(1, navigate.SLOW, 0, navigate.SLOW)
-	sleep(5)
-	nav.motor_cmd(0, navigate.SLOW, 1, navigate.SLOW)
-	sleep(5)
+nav.move_forward(navigate.SLOW)
+#nav.turn(math.pi/6)
+#nav.move_backward(navigate.SLOW)
+#sleep(2)
+#nav.move_forward(0)

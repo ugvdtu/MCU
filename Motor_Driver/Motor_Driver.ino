@@ -1,7 +1,12 @@
+#include <ros.h>
+#include <std_msgs/UInt8MultiArray.h>
+
 #define M1_PWM 9 
 #define M2_PWM 10
-#define M1_DIR 12
-#define M2_DIR 13
+#define M1_DIR 11
+#define M2_DIR 12
+
+ros::NodeHandle  nh1;
 
 void Clockwise(int pin);
 void AntiClockwise(int pin);
@@ -9,6 +14,38 @@ void Speed(int pwm,int pin);
 void Forward(int pwm);
 void Left_Right(int pwml,int pwmr);
 void brake();
+
+
+void messageCb( const std_msgs::UInt8MultiArray& msg){
+  //digitalWrite(13, HIGH-digitalRead(13));   // blink the led
+  
+  // msg[0]: Direction of motor #1
+  // msg[1]: Speed of motor #1
+  // msg[2]: Direction of motor #2
+  // msg[3]: Speed of motor #2
+  //test=msg.data[0];
+  if(msg.data[0] == 1) 
+    {Clockwise(M1_DIR);
+     
+     //digitalWrite(LED_BUILTIN,HIGH);
+    }
+  else if ( msg.data[0] == 0)
+    {AntiClockwise(M1_DIR);
+     //digitalWrite(LED_BUILTIN,LOW);
+    }
+  if(msg.data[2] == 1)
+    {
+      Clockwise(M2_DIR);
+    }
+  else if (msg.data[2] == 0)
+     {
+      AntiClockwise(M2_DIR);
+     }
+  
+  analogWrite(M1_PWM,msg.data[1]);
+  analogWrite(M2_PWM,msg.data[3]);
+}
+
 
 void setPwmFrequency(int pin, int divisor) {
   byte mode;
@@ -41,6 +78,8 @@ void setPwmFrequency(int pin, int divisor) {
   }
 }
 
+ros::Subscriber<std_msgs::UInt8MultiArray> sub("MCU_Input", &messageCb );
+
 void setup()
 {
   pinMode(M1_DIR,OUTPUT);
@@ -50,23 +89,24 @@ void setup()
   pinMode(13,OUTPUT);
   setPwmFrequency(9, 8); //9,8 ...3.9Khz
   setPwmFrequency(10, 8);
-  delay(1000);
-  analogWrite(9,50);
-  analogWrite(10,50);
+  //analogWrite(M1_PWM,100);
+  //analogWrite(M2_PWM,100);
+  //delay(1000);
+  nh1.initNode();
+  
+  nh1.subscribe(sub);
 }
 
 void loop()
 {
-  //digitalWrite(12,HIGH);
-  //digitalWrite(13,HIGH);
-  Clockwise(M1_DIR);
+  /*Clockwise(M1_DIR);
   Clockwise(M2_DIR);
   delay(1000);
-  //digitalWrite(12,LOW);
-  //digitalWrite(13,LOW);
   AntiClockwise(M1_DIR);
   AntiClockwise(M2_DIR);
-  delay(1000);
+  delay(1000);*/
+  nh1.spinOnce();
+  delay(1);
   
 }
 
